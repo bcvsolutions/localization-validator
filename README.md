@@ -24,12 +24,14 @@ If it has plural amount, it should have these forms:
 Comparing
 ---------
 
+----------  ---------------
 CS	    EN
 ----------  ---------------
 example_0   -
 example_1   example
 example_2   example_plural
 example_5   example_plural
+---------  ----------------
 
 Table: How program compares plural messages
 
