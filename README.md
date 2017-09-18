@@ -28,8 +28,11 @@ Comparing
 CS	    EN
 ----------  ---------------
 example_0   -
+
 example_1   example
+
 example_2   example_plural
+
 example_5   example_plural
 ---------  ----------------
 
