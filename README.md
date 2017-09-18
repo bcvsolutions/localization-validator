@@ -25,7 +25,7 @@ Comparing
 ---------
 
 CS	    EN
---	    --
+----------  ---------------
 example_0   -
 example_1   example
 example_2   example_plural
