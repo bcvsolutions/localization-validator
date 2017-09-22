@@ -24,6 +24,7 @@ If it has plural amount, it should have these forms:
 
 Comparing
 ---------
+*Table: how program compares plural messages*
 
 | CS        | EN             |
 |-----------|----------------|
@@ -31,8 +32,6 @@ Comparing
 | example_1 | example        |
 | example_2 | example_plural |
 | example_5 | example_plural |
-
-*Table: how program compares plural messages*
 
 Messages that ends with _0 are just checked if it's there when it comes to plural.
 
