@@ -33,7 +33,7 @@ Comparing
 | example_2 | example_plural |
 | example_5 | example_plural |
 
-Messages that ends with _0 are just checked if it's there when it comes to plural.
+Messages that ends with _0 are optional. If its found in CS or EN language, it's just checked for pair in other language.
 
 Other cases are simply compared and if there is a mismatch, program will search for closest match.
 If the match is not found it will continue comapring next pair.
