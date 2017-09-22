@@ -25,7 +25,7 @@ If it has plural amount, it should have these forms:
 Comparing
 ---------
 
-Table: How program compares plural messages
+*Table: how program compares plural messages*
 
 | CS        | EN             |
 |-----------|----------------|
