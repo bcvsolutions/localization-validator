@@ -163,7 +163,7 @@ public class Compare {
             }
         } else if(i < language2.size()) {
             for(;i < language2.size(); i++) {
-                Messages.addDefect("EN: " + language1.get(i + j) + " -> extra word");
+                Messages.addDefect("EN: " + language2.get(i) + " -> extra word");
             }
         }
 
