@@ -12,13 +12,13 @@ CS messages are specified by number behind underscore and EN messages ends with 
 If it has plural amount, it should have these forms:
 
 **CS**
- * example_0
+ * example_0 (optional)
  * example_1
  * example_2
  * example_5
 
 **EN**
- * example_0
+ * example_0 (optional)
  * example
  * example_plural
 
