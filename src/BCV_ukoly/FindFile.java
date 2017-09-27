@@ -66,8 +66,6 @@ public class FindFile {
            } else if(file.getName().equals(language2 + suffix)) {
                foundEN = true;
                jsonFiles.add(file);
-           } else {
-               System.out.println(file.getParent());
            }
        }
 

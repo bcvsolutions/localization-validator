@@ -127,7 +127,30 @@ public class Compare {
                         j = iterators[1];
                     }
 
-                    // check if it has more than one uppercase letters
+                } else if (language2.get(i).endsWith("0")) {
+                    // check if the base of the words is the same (means numerical serie)
+					if(language1.get(i + j).startsWith(language2.get(i).substring(0, language2.get(i + j).length() - 2))) {
+						Messages.addDefect("EN: " + language2.get(i) + " -> missing suffix '0' in CS");
+						i++;
+						j--;
+						int[] iterators = comparePlural(i, j, language1, language2);
+						i = iterators[0];
+						j = iterators[1];
+					}
+
+					// try to find rest of the numerical serie in CS
+					else if(findCSWord(i, j, language1, language2.get(i)) != null) {
+						// if the matching numerical serie in CS is found
+						int[] iterators = findCSWord(i, j, language1, language2.get(i));
+						i = iterators[0];
+						j = iterators[1];
+
+					} else {
+						// if the matching numerical serie not found
+						Messages.addDefect("EN: " + language2.get(i) + " -> missing suffix '0' in CS");
+					}
+
+					// check if it has more than one uppercase letters
                 } else if (Character.isUpperCase(language1.get(i + j).codePointAt(0)) &&
                         Character.isUpperCase(language1.get(i + j).codePointAt(1)) &&
                         Character.isUpperCase(language2.get(i).codePointAt(0)) &&
@@ -171,68 +194,6 @@ public class Compare {
     }
 
     /**
-     * Tries to find nearest possible match or any possible match
-     * @param i
-     * @param j
-     * @param language1
-     * @param language2
-     * @return
-     */
-    private static int[] findClosestMatch(int i, int j, ArrayList<String> language1, ArrayList<String> language2) {
-
-        int count1 = 0;
-        int count2 = 0;
-        boolean found1 = false;
-        boolean found2 = false;
-
-        for (int k = i + j + 1; k < language1.size(); k++) {
-            count1++;
-            if (language1.get(k).equals(language2.get(i))) {
-                found1 = true;
-                break;
-            }
-        }
-        for (int k = i + 1; k < language2.size(); k++) {
-            count2++;
-            if (language2.get(k).equals(language1.get(i + j))) {
-                found2 = true;
-                break;
-            }
-        }
-
-        if (count1 <= count2 && found1) {
-            for (int k = i + j; k < i + j + count1 ; k++) {
-                Messages.addDefect("CS: " + language1.get(k) + " -> extra word");
-            }
-            i--;
-            j += count1;
-        } else if (count2 < count1 && found2) {
-            for (int k = i; k < i + count2 ; k++) {
-                Messages.addDefect("EN: " + language2.get(k) + " -> extra word");
-            }
-            i += count2 - 1;
-            j -= count2;
-        } else if  (found1){
-            for (int k = i + j; k < i + j + count1 ; k++) {
-                Messages.addDefect("CS: " + language1.get(k) + " -> extra word");
-            }
-            i--;
-            j += count1;
-        } else if (found2) {
-            for (int k = i; k < i + count2 ; k++) {
-                Messages.addDefect("EN: " + language2.get(k) + " -> extra word");
-            }
-            i += count2 - 1;
-            j -= count2;
-        } else {
-            Messages.addDefect(language1.get(i + j) + " vs. " + language2.get(i) + " -> match not found for both words");
-        }
-
-
-        return new int[] {i, j};
-    }
-
-    /**
      * Compares messages which describes quantity
      * @param i
      * @param j
@@ -241,7 +202,6 @@ public class Compare {
      * @return
      */
     private static int[] comparePlural(int i, int j, ArrayList<String> language1, ArrayList<String> language2) {
-        boolean foundCS_0 = false;
         boolean foundCS_1 = false;
         boolean foundCS_2 = false;
         boolean foundCS_5 = false;
@@ -251,7 +211,7 @@ public class Compare {
                 int number = Integer.parseInt(String.valueOf(language1.get(i + j).charAt(language1.get(i + j).length() - 1)));
 
                 if(number == 0) {
-                    foundCS_0 = true;
+                    Messages.addDefect("CS: " + language1.get(i + j) + " -> mising suffix '0' in EN");
                     j++;
                 } else if(number == 1 && language2.get(i).endsWith("plural")) {
                     foundCS_1 = true;
@@ -294,15 +254,14 @@ public class Compare {
             if(language2.get(i).endsWith("plural")) {
                 Messages.addDefect("CS: " + language1.get(i + j - 1) + " -> missing amount number in CS");
                 j--;
-            } else if(foundCS_0 || foundCS_1 || foundCS_2)
-                Messages.addDefect("CS: " + language1.get(i + j - 1) + " -> please check numerical serie for possible missing numbers");
+            } else if(foundCS_2)
+                Messages.addDefect("CS: " + language1.get(i + j - 1)
+						+ " -> please check numerical serie for possible missing numbers");
             return new int[] {i, j};
         }
 
         // control of Czech numbers, defining quantity
-        if(foundCS_0 || foundCS_1 || foundCS_2 || foundCS_5) {
-            if (!foundCS_0)
-                Messages.addDefect("CS: " + language1.get(i + j) + " -> missing number '0' in CS");
+        if(foundCS_1 || foundCS_2 || foundCS_5) {
             if (!foundCS_1)
                 Messages.addDefect("CS: " + language1.get(i + j) + " -> missing number '1' in CS");
             if (!foundCS_2)
@@ -313,4 +272,89 @@ public class Compare {
 
         return new int[] {i, j};
     }
+
+	/**
+	 * Tries to find nearest possible match or any possible match
+	 * @param i
+	 * @param j
+	 * @param language1
+	 * @param language2
+	 * @return
+	 */
+	private static int[] findClosestMatch(int i, int j, ArrayList<String> language1, ArrayList<String> language2) {
+		int count1 = 0;
+		int count2 = 0;
+		boolean found1 = false;
+		boolean found2 = false;
+
+		for (int k = i + j + 1; k < language1.size(); k++) {
+			count1++;
+			if (language1.get(k).equals(language2.get(i))) {
+				found1 = true;
+				break;
+			}
+		}
+		for (int k = i + 1; k < language2.size(); k++) {
+			count2++;
+			if (language2.get(k).equals(language1.get(i + j))) {
+				found2 = true;
+				break;
+			}
+		}
+
+		if (count1 <= count2 && found1) {
+			for (int k = i + j; k < i + j + count1 ; k++) {
+				Messages.addDefect("CS: " + language1.get(k) + " -> extra word");
+			}
+			i--;
+			j += count1;
+		} else if (count2 < count1 && found2) {
+			for (int k = i; k < i + count2 ; k++) {
+				Messages.addDefect("EN: " + language2.get(k) + " -> extra word");
+			}
+			i += count2 - 1;
+			j -= count2;
+		} else if (found1) {
+			for (int k = i + j; k < i + j + count1 ; k++) {
+				Messages.addDefect("CS: " + language1.get(k) + " -> extra word");
+			}
+			i--;
+			j += count1;
+		} else if (found2) {
+			for (int k = i; k < i + count2 ; k++) {
+				Messages.addDefect("EN: " + language2.get(k) + " -> extra word");
+			}
+			i += count2 - 1;
+			j -= count2;
+		} else {
+			Messages.addDefect(language1.get(i + j) + " vs. " + language2.get(i) + " -> match not found for both words");
+		}
+
+		return new int[] {i, j};
+	}
+
+	private static int[] findCSWord(int i, int j, ArrayList<String> language1, String wordEN) {
+    	boolean found = false;
+		int count = 0;
+
+    	for(int k = i + j; i < language1.size(); k++) {
+    		count++;
+			if (language1.get(k).startsWith(wordEN.substring(0, wordEN.length() - 2))) {
+				found = true;
+				break;
+			}
+		}
+
+		if (found) {
+			for (int k = i + j; k < i + j + count; k++) {
+				Messages.addDefect("CS: " + language1.get(k) + " -> extra word");
+			}
+			i--;
+			j += count;
+		} else {
+			return null;
+		}
+
+    	return new int[] {i, j};
+	}
 }
