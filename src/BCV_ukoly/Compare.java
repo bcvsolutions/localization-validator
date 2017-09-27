@@ -98,7 +98,7 @@ public class Compare {
         int i;
         int j = 0;
         for (i = 0; i + j < language1.size() && i < language2.size(); i++) {
-            // System.out.println((i+j) + " " + i + " " + language1.get(i + j) + " vs. " + language2.get(i));
+             // System.out.println((i+j) + " " + i + " " + language1.get(i + j) + " vs. " + language2.get(i));
 
             // if the messages are different, check if it's not about different plural values
             if (!language1.get(i + j).equals(language2.get(i))) {
@@ -107,14 +107,25 @@ public class Compare {
                     int[] iterators = comparePlural(i, j, language1, language2);
                     i = iterators[0];
                     j = iterators[1];
+                }
 
-                } else if(language2.get(i).endsWith("plural")) {
+                // if the next word in EN ends with plural, program tries to find CS numerical serie
+                else if (language2.size() > i + 1 &&
+						language2.get(i + 1).endsWith("plural") &&
+						verifyCSNumericalSerie(i, j, language1, language2.get(i))) {
+
+                	int[] iterators = findCSNumericalSerie(i, j, language1, language2.get(i));
+                	i = iterators[0];
+                	j = iterators[1];
+
+				} else if(language2.get(i).endsWith("plural")) {
 
                     // check if there is singular in EN
                     if(language2.get(i).startsWith(language2.get(i - 1))) {
                         // has got singular in EN
                         if(language1.get(i + j).startsWith(language2.get(i - 1))) {
-                            Messages.addDefect("CS: " + language1.get(i + j - 1) + " -> defining plural in CS without suffix");
+                            Messages.addDefect("CS: " +
+									language1.get(i + j - 1) + " -> defining plural in CS without suffix");
                             i -= 2;
                             j++;
                         }
@@ -129,7 +140,7 @@ public class Compare {
 
                 } else if (language2.get(i).endsWith("0")) {
                     // check if the base of the words is the same (means numerical serie)
-					if(language1.get(i + j).startsWith(language2.get(i).substring(0, language2.get(i + j).length() - 2))) {
+					if(language1.get(i + j).startsWith(language2.get(i).substring(0, language2.get(i).length() - 2))) {
 						Messages.addDefect("EN: " + language2.get(i) + " -> missing suffix '0' in CS");
 						i++;
 						j--;
@@ -139,9 +150,11 @@ public class Compare {
 					}
 
 					// try to find rest of the numerical serie in CS
-					else if(findCSWord(i, j, language1, language2.get(i)) != null) {
+					else if (verifyCSNumericalSerie(i, j, language1, language2.get(i).substring(0, language2.get(i).length() - 2))) {
 						// if the matching numerical serie in CS is found
-						int[] iterators = findCSWord(i, j, language1, language2.get(i));
+
+						int[] iterators = findCSNumericalSerie(i, j, language1, language2.get(i).substring(0, language2.get(i).length() - 2));
+
 						i = iterators[0];
 						j = iterators[1];
 
@@ -333,21 +346,21 @@ public class Compare {
 		return new int[] {i, j};
 	}
 
-	private static int[] findCSWord(int i, int j, ArrayList<String> language1, String wordEN) {
+	private static int[] findCSNumericalSerie(int i, int j, ArrayList<String> language1, String numWordEN) {
     	boolean found = false;
 		int count = 0;
 
-    	for(int k = i + j; i < language1.size(); k++) {
-    		count++;
-			if (language1.get(k).startsWith(wordEN.substring(0, wordEN.length() - 2))) {
+    	for(int k = i + j; k < language1.size(); k++) {
+			if (language1.get(k).startsWith(numWordEN)) {
 				found = true;
 				break;
 			}
+			count++;
 		}
 
 		if (found) {
 			for (int k = i + j; k < i + j + count; k++) {
-				Messages.addDefect("CS: " + language1.get(k) + " -> extra word");
+					Messages.addDefect("CS: " + language1.get(k) + " -> extra word");
 			}
 			i--;
 			j += count;
@@ -356,5 +369,15 @@ public class Compare {
 		}
 
     	return new int[] {i, j};
+	}
+
+	private static boolean verifyCSNumericalSerie(int i, int j, ArrayList<String> language1, String numWordEN) {
+
+    	for(int k = i + j; k < language1.size(); k++) {
+			if (language1.get(k).startsWith(numWordEN)) {
+				return true;
+			}
+		}
+    	return false;
 	}
 }
