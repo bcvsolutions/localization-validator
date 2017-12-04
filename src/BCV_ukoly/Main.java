@@ -6,10 +6,18 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-
-        View.printIntroduction();
-        while (true) {
-            input();
+        if (args.length > 0) {
+            View.printShortIntroduction();
+            String path = args[0];
+            fileSearch(path);
+            if(!FindFile.getFolderList().isEmpty()) {
+                Compare.compareAllFiles();
+            }
+        } else {
+            View.printIntroduction();
+            while (true) {
+                input();
+            }
         }
     }
 
@@ -82,18 +90,23 @@ public class Main {
 
     private static void pathInput() {
         // if the folder list is empty program asks for entering new directory to search for JSON files
-
-        FindFile ff = new FindFile();
-        Scanner scan = new Scanner(System.in);
         System.out.println("Enter the directory where to search or 'e' to exit: ");
+        Scanner scan = new Scanner(System.in);
         String directory = scan.next();
 
         if(directory.equals("exit") || directory.equals("e"))
             System.exit(0);
 
+        FindFile ff = new FindFile();
         ff.clearFolderList();
         ff.findFile(new File(directory));
 
         View.printSearchResultStatus();
+    }
+
+    private static void fileSearch(String directory) {
+        FindFile ff = new FindFile();
+        ff.clearFolderList();
+        ff.findFile(new File(directory));
     }
 }

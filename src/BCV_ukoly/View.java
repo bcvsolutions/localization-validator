@@ -11,7 +11,11 @@ import java.io.File;
 public class View {
 
     public static void printIntroduction() {
-        System.out.println("\n  ------------- JSON DEFECT FINDER -------------\n");
+        System.out.println("\n------------- JSON DEFECT FINDER -------------\n");
+    }
+
+    public static void printShortIntroduction() {
+        System.out.println("\n------------- JSON DEFECT FINDER -------------");
     }
 
     public static void printUserSelection() {
