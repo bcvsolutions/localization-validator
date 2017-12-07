@@ -70,7 +70,7 @@ public class Compare {
     public static void compareAllFiles() throws IOException, InterruptedException {
 
         for(int i = 0; i < FindFile.getFolderList().size(); i++) {
-            Compare.compareMessages(FindFile.getFolderList().get(i));
+            compareMessages(FindFile.getFolderList().get(i));
         }
     }
 
@@ -154,7 +154,6 @@ public class Compare {
 						// if the matching numerical serie in CS is found
 
 						int[] iterators = findCSNumericalSerie(i, j, language1, language2.get(i).substring(0, language2.get(i).length() - 2));
-
 						i = iterators[0];
 						j = iterators[1];
 
@@ -267,7 +266,7 @@ public class Compare {
             if(language2.get(i).endsWith("plural")) {
                 Messages.addDefect("CS: " + language1.get(i + j - 1) + " -> missing amount number in CS");
                 j--;
-            } else if(foundCS_2)
+            } else if (foundCS_2)
                 Messages.addDefect("CS: " + language1.get(i + j - 1)
 						+ " -> please check numerical serie for possible missing numbers");
             return new int[] {i, j};
