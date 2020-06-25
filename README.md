@@ -1,3 +1,7 @@
+# DEPRECATION NOTICE
+This codebase was merged to CzechIdM product repository (available [here](https://github.com/bcvsolutions/CzechIdMng)) and is no longer maintanined as a separate project.
+
+
 Localization Validator
 ======================
 
